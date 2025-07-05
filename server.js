@@ -26,22 +26,20 @@ io.on('connection', (socket) => {
 
   socket.on('private_message', (msg) => {
     const toSocketId = users[msg.to];
-    const fromSocketId = users[msg.from];
-
-    // Alıcıya mesaj gönder
     if (toSocketId) {
       io.to(toSocketId).emit('private_message', msg);
-    }
-
-    // Gönderen kendi mesajını da görsün (aynı mesajı tekrar yolluyoruz)
-    if (fromSocketId && fromSocketId !== toSocketId) {
-      io.to(fromSocketId).emit('private_message', msg);
     }
   });
 
   socket.on('disconnect', () => {
     console.log('User disconnected:', socket.id);
-    // Kullanıcıyı users listesinden kaldırmak istersen buraya ekleyebilirsin
+    // Burada kullanıcıyı silebilirsin istersen: 
+    for (const key in users) {
+      if (users[key] === socket.id) {
+        delete users[key];
+        break;
+      }
+    }
   });
 });
 
